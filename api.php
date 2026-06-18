@@ -7,8 +7,8 @@ header("Content-Type: application/json; charset=UTF-8");
 
 // Configuración de la base de datos
 $host = "localhost";
-$user = "root";       
-$password = "";       
+$user = "root";
+$password = "";
 $database = "basededatos";
 
 $conn = new mysqli($host, $user, $password, $database);
@@ -21,13 +21,13 @@ if ($conn->connect_error) {
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 switch ($action) {
-    
+
     // 1. Obtener todos los partidos (Incluye goles reales)
     case 'get_matches':
         $query = "SELECT id, team1 AS equipoA, team2 AS equipoB, scheduled_at AS fecha, real_goals_team1, real_goals_team2 FROM matches";
         $result = $conn->query($query);
         $matches = [];
-        
+
         while ($row = $result->fetch_assoc()) {
             $matches[] = $row;
         }
@@ -41,7 +41,7 @@ switch ($action) {
                   FROM users";
         $result = $conn->query($query);
         $users = [];
-        
+
         while ($row = $result->fetch_assoc()) {
             $users[] = $row;
         }
@@ -58,7 +58,7 @@ switch ($action) {
                   LIMIT 10";
         $result = $conn->query($query);
         $top10 = [];
-        
+
         while ($row = $result->fetch_assoc()) {
             $top10[] = $row;
         }
@@ -107,7 +107,7 @@ switch ($action) {
         $check_stmt->bind_param("ii", $match_id, $user_id);
         $check_stmt->execute();
         $check_result = $check_stmt->get_result();
-        
+
         if ($check_result->num_rows > 0) {
             echo json_encode(["success" => false, "error" => "Ya registraste un pronóstico para este partido."]);
             $check_stmt->close();
@@ -117,8 +117,10 @@ switch ($action) {
 
         $stmt = $conn->prepare("INSERT INTO predictions (match_id, user_id, predicted_goals_team1, predicted_goals_team2) VALUES (?, ?, ?, ?)");
         $stmt->bind_param("iiii", $match_id, $user_id, $goals1, $goals2);
-        
+
         if ($stmt->execute()) {
+            // Opcional: actualizar puntaje acumulado del usuario inmediatamente (si la lógica lo requiere)
+            // Aquí no sumamos porque la predicción aún no tiene 'score' asignado hasta que se cierre el partido.
             echo json_encode(["success" => true, "message" => "Predicción guardada correctamente."]);
         } else {
             echo json_encode(["error" => $stmt->error]);
@@ -152,7 +154,7 @@ switch ($action) {
         $match_update->close();
 
         // 2. Traer todas las predicciones de este partido para procesar puntajes
-        $pred_stmt = $conn->prepare("SELECT id, predicted_goals_team1, predicted_goals_team2 FROM predictions WHERE match_id = ?");
+        $pred_stmt = $conn->prepare("SELECT id, user_id, predicted_goals_team1, predicted_goals_team2 FROM predictions WHERE match_id = ?");
         $pred_stmt->bind_param("i", $match_id);
         $pred_stmt->execute();
         $predictions = $pred_stmt->get_result();
@@ -162,10 +164,14 @@ switch ($action) {
         $real_trend = ($real_goals1 > $real_goals2) ? 1 : (($real_goals1 < $real_goals2) ? -1 : 0);
         $real_diff = $real_goals1 - $real_goals2;
 
+        // Mantener lista de usuarios afectados para luego recalcular su puntaje acumulado
+        $affected_users = [];
+
         while ($pred = $predictions->fetch_assoc()) {
             $pred_id = $pred['id'];
             $p_g1 = $pred['predicted_goals_team1'];
             $p_g2 = $pred['predicted_goals_team2'];
+            $pred_user_id = $pred['user_id'];
 
             $pred_trend = ($p_g1 > $p_g2) ? 1 : (($p_g1 < $p_g2) ? -1 : 0);
             $pred_diff = $p_g1 - $p_g2;
@@ -184,12 +190,37 @@ switch ($action) {
 
             $update_stmt->bind_param("ii", $score_otorgado, $pred_id);
             $update_stmt->execute();
+
+            // Agregar usuario a la lista de afectados (evitar duplicados)
+            $affected_users[$pred_user_id] = true;
         }
 
         $pred_stmt->close();
         $update_stmt->close();
 
-        echo json_encode(["success" => true, "message" => "Resultado guardado y puntajes actualizados (7, 5, 2)."]);
+        // 3. Actualizar puntaje acumulado de los usuarios que hicieron predicciones en este partido
+        //    El puntaje acumulado se calcula como la suma de 'score' en la tabla predictions por usuario.
+        if (!empty($affected_users)) {
+            // Preparar statements reutilizables
+            $sum_stmt = $conn->prepare("SELECT COALESCE(SUM(score), 0) AS total FROM predictions WHERE user_id = ?");
+            $update_user_stmt = $conn->prepare("UPDATE users SET puntaje = ? WHERE id = ?");
+
+            foreach (array_keys($affected_users) as $uid) {
+                $sum_stmt->bind_param("i", $uid);
+                $sum_stmt->execute();
+                $sum_res = $sum_stmt->get_result();
+                $row_sum = $sum_res->fetch_assoc();
+                $total = (int)$row_sum['total'];
+
+                $update_user_stmt->bind_param("ii", $total, $uid);
+                $update_user_stmt->execute();
+            }
+
+            $sum_stmt->close();
+            $update_user_stmt->close();
+        }
+
+        echo json_encode(["success" => true, "message" => "Resultado guardado y puntajes actualizados (7, 5, 2). Puntajes de usuarios recalculados."]);
         break;
 
     default:
