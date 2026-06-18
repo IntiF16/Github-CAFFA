@@ -33,64 +33,87 @@
             padding: 30px;
             max-width: 500px;
             width: 100%;
-            box-shadow: 0 8px 24px rgba(0, 255, 135, 0.15);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            box-sizing: border-box;
             text-align: center;
         }
 
         .user-tag {
-            background-color: #1a2421;
-            color: var(--accent-color);
-            padding: 8px 15px;
+            background: #121212;
+            padding: 6px 12px;
             border-radius: 20px;
             display: inline-block;
-            font-weight: bold;
             font-size: 0.9rem;
-            margin-bottom: 20px;
-            border: 1px solid rgba(0, 255, 135, 0.3);
+            color: #888;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
         }
 
         .match-workspace {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             align-items: center;
-            margin: 30px 0;
+            margin-bottom: 30px;
         }
 
-        .team-block { flex: 1; text-align: center; }
-        .team-block img { width: 75px; height: 48px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.5); display: block; margin: 0 auto 12px; }
-        .team-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; }
+        .team-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 40%;
+        }
 
-        .vs-divider { font-size: 1.6rem; font-weight: bold; color: var(--accent-color); }
+        .team-block img {
+            width: 70px;
+            height: auto;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            background: #222;
+        }
+
+        .team-name {
+            font-size: 1.1rem;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+        }
 
         .goals-input {
-            width: 70px;
-            padding: 10px;
+            width: 60px;
+            background: #000;
+            border: 1px solid var(--border-color);
+            color: #fff;
             font-size: 1.5rem;
             text-align: center;
-            background-color: #000;
-            color: #fff;
-            border: 2px solid var(--border-color);
-            border-radius: 8px;
-            font-weight: bold;
+            padding: 6px;
+            border-radius: 6px;
         }
         .goals-input:focus { border-color: var(--accent-color); outline: none; }
+
+        .vs-divider {
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: #555;
+        }
 
         .actions-layout {
             display: flex;
             justify-content: space-between;
             gap: 15px;
-            margin-top: 25px;
         }
 
-        .btn {
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: bold;
+        .btn-form {
+            flex: 1;
+            padding: 12px;
             border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
             border: none;
             transition: background 0.2s;
-            flex: 1;
         }
 
         .btn-success { background-color: var(--accent-color); color: #000; }
@@ -122,8 +145,8 @@
         </div>
 
         <div class="actions-layout">
-            <button class="btn btn-back" onclick="volverAlInicio()">← Volver</button>
-            <button class="btn btn-success" onclick="guardarPrediccionPagina()">Guardar Jugada</button>
+            <button class="btn-form btn-back" onclick="window.location.href='index.html'">Volver</button>
+            <button class="btn-form btn-success" onclick="guardarPronostico()">Guardar</button>
         </div>
     </div>
 

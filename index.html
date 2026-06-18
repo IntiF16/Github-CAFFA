@@ -13,6 +13,7 @@
             --accent-hover: #00cc6a;
             --border-color: #333333;
             --error-color: #ff5555;
+            --admin-color: #ffaa00;
         }
 
         body {
@@ -29,144 +30,149 @@
         header { text-align: center; margin-bottom: 20px; }
         h1 { color: var(--accent-color); margin-bottom: 5px; }
 
-        /* --- CUADRO DE IDENTIDAD Y ANIMACIÓN SHAKE --- */
         .auth-card {
             background-color: var(--card-bg);
-            border: 2px dashed var(--border-color);
-            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
             padding: 20px;
             width: 100%;
-            max-width: 1000px;
+            max-width: 600px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             margin-bottom: 25px;
             box-sizing: border-box;
-            text-align: center;
-            transition: transform 0.2s;
-        }
-        
-        /* Animación para sacudir el panel si no hay cuenta */
-        .shake-animation {
-            animation: shake 0.4s ease-in-out;
-            border-color: var(--error-color) !important;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-8px); }
-            40%, 80% { transform: translateX(8px); }
-        }
-
-        .auth-form {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
         }
 
         .auth-input {
-            padding: 10px;
-            font-size: 1rem;
-            border-radius: 5px;
+            background-color: #121212;
             border: 1px solid var(--border-color);
-            background-color: #000;
-            color: #fff;
-            width: 250px;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 1rem;
+            width: 65%;
         }
+        .auth-input:focus { border-color: var(--accent-color); outline: none; }
 
-        #status-usuario { margin-top: 12px; font-weight: bold; color: var(--error-color); }
+        .btn-ingresar {
+            background-color: var(--accent-color);
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+        .btn-ingresar:hover { background-color: var(--accent-hover); }
 
-        /* --- CONTENEDOR DISPOSICIÓN --- */
-        .container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 30px;
-            max-width: 1000px;
+        .btn-logout {
+            background: none;
+            border: 1px solid #ff5555;
+            color: #ff5555;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+        .btn-logout:hover { background: #ff5555; color: black; }
+
+        .admin-dashboard {
+            background-color: #241a00;
+            border: 2px dashed var(--admin-color);
+            border-radius: 12px;
+            padding: 20px;
             width: 100%;
+            max-width: 600px;
+            margin-bottom: 25px;
+            box-sizing: border-box;
+            display: none;
         }
-        @media (min-width: 768px) { .container { grid-template-columns: 2fr 1fr; } }
+        .admin-title { color: var(--admin-color); margin-top: 0; margin-bottom: 10px; }
+        .admin-form { display: flex; gap: 10px; flex-wrap: wrap; }
+        .admin-form .auth-input { width: 30%; font-size: 0.85rem; }
 
-        /* --- TARJETAS DE PARTIDOS --- */
+        .container {
+            display: flex;
+            gap: 25px;
+            width: 100%;
+            max-width: 1000px;
+            box-sizing: border-box;
+        }
+        main { flex: 2; }
+        .tablas-section { flex: 1.2; background-color: var(--card-bg); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); height: fit-content; }
+
         .match-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 18px;
-            margin-bottom: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .teams { font-size: 1.1rem; font-weight: bold; }
-        .match-details { color: #aaaaaa; font-size: 0.85rem; margin-top: 4px; }
+        .match-info { display: flex; flex-direction: column; gap: 5px; }
+        .teams { font-size: 1.15rem; font-weight: bold; }
+        .match-details { font-size: 0.85rem; color: #888; }
 
-        /* --- BOTÓN DE ACCIÓN Y ANIMACIÓN DEL CANDADO --- */
         .btn-accion {
-            background-color: var(--accent-color);
-            color: #000;
-            border: none;
-            padding: 10px 18px;
-            font-weight: bold;
-            border-radius: 5px;
+            background-color: #222;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            padding: 8px 16px;
+            border-radius: 6px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: background 0.2s;
+            font-weight: bold;
+            transition: all 0.2s;
         }
-        .btn-accion:hover { background-color: var(--accent-hover); }
-        
-        /* Estilo especial cuando el partido está bloqueado */
-        .btn-locked {
-            background-color: #2a2a2a;
-            color: #888;
-        }
-        .btn-locked:hover { background-color: #333; }
+        .btn-accion:hover { background-color: var(--accent-color); color: black; }
+        .btn-admin { border-color: var(--admin-color); color: var(--admin-color); }
+        .btn-admin:hover { background-color: var(--admin-color); color: black; }
 
-        /* Icono de candado palpitante */
-        .lock-icon {
-            display: inline-block;
-            animation: pulseLock 1.5s infinite alternate;
-        }
-        @keyframes pulseLock {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.2); color: var(--error-color); }
-        }
-
-        /* --- LEADERBOARD --- */
-        .tablas-section {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            height: fit-content;
-        }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 0.95rem; }
         th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); }
-        th { color: var(--accent-color); }
-        .posicion { font-weight: bold; color: #ffcc00; }
-        .btn-logout { background-color: #ff5555; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 10px; }
+        th { color: var(--accent-color); font-weight: bold; }
+
+        .shake-animation { animation: shake 0.3s ease-in-out; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🏆 Penca Caffa</h1>
-        <p>Iniciá sesión con tu nombre y jugá tus resultados</p>
+        <h1>🏆 PENCA CAFFA 2026 🏆</h1>
+        <p>Gestioná tus pronósticos deportivos y sumá puntos</p>
     </header>
 
     <div class="auth-card" id="panel-identidad">
-        <label style="font-weight: bold; font-size: 1.1rem;">Verificación de Jugador</label>
-        <div class="auth-form" id="form-login-inputs">
-            <input type="text" id="input-usuario" class="auth-input" placeholder="Tu nombre (Ej: Sofía o Mateo)">
-            <button class="btn-accion" onclick="verificarUsuario()">Ingresar al Sistema</button>
+        <div id="form-login-inputs" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <input type="text" id="input-usuario" class="auth-input" placeholder="Ingresá tu nombre de jugador...">
+            <button class="btn-ingresar" onclick="verificarUsuario()">Ingresar</button>
         </div>
-        <div id="status-usuario">⚠️ Debes verificar tu nombre para poder habilitar los pronósticos.</div>
+        <div id="status-usuario" style="margin-top: 0px; font-weight: 500; font-size: 1rem;">🔒 Debes verificar tu nombre para poder habilitar los pronósticos.</div>
+    </div>
+
+    <div class="admin-dashboard" id="dashboard-admin">
+        <h3 class="admin-title">🛠️ Dashboard de Administración</h3>
+        <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 15px;">Alta de nuevos encuentros para la Penca:</p>
+        <div class="admin-form">
+            <input type="text" id="new-team1" class="auth-input" placeholder="Equipo Local (ej: Uruguay)">
+            <input type="text" id="new-team2" class="auth-input" placeholder="Equipo Visitante (ej: Brasil)">
+            <input type="datetime-local" id="new-date" class="auth-input">
+            <button class="btn-accion btn-admin" onclick="crearNuevoPartido()">Agregar Partido</button>
+        </div>
     </div>
 
     <div class="container">
         <main>
             <h2>Partidos Disponibles</h2>
-            <div id="contenedor-partidos">
-                </div>
+            <div id="contenedor-partidos"></div>
         </main>
 
         <aside class="tablas-section">
@@ -186,4 +192,4 @@
 
     <script src="fnted.js"></script>
 </body>
-</html>
+</html> 
