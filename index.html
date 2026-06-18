@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penca Caffa - Inicio</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --accent-color: #00ff87;
+            --accent-hover: #00cc6a;
+            --border-color: #333333;
+            --error-color: #ff5555;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header { text-align: center; margin-bottom: 20px; }
+        h1 { color: var(--accent-color); margin-bottom: 5px; }
+
+        /* --- CUADRO DE IDENTIDAD Y ANIMACIÓN SHAKE --- */
+        .auth-card {
+            background-color: var(--card-bg);
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 25px;
+            box-sizing: border-box;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        /* Animación para sacudir el panel si no hay cuenta */
+        .shake-animation {
+            animation: shake 0.4s ease-in-out;
+            border-color: var(--error-color) !important;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .auth-form {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .auth-input {
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            background-color: #000;
+            color: #fff;
+            width: 250px;
+        }
+
+        #status-usuario { margin-top: 12px; font-weight: bold; color: var(--error-color); }
+
+        /* --- CONTENEDOR DISPOSICIÓN --- */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            max-width: 1000px;
+            width: 100%;
+        }
+        @media (min-width: 768px) { .container { grid-template-columns: 2fr 1fr; } }
+
+        /* --- TARJETAS DE PARTIDOS --- */
+        .match-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .teams { font-size: 1.1rem; font-weight: bold; }
+        .match-details { color: #aaaaaa; font-size: 0.85rem; margin-top: 4px; }
+
+        /* --- BOTÓN DE ACCIÓN Y ANIMACIÓN DEL CANDADO --- */
+        .btn-accion {
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 10px 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .btn-accion:hover { background-color: var(--accent-hover); }
+        
+        /* Estilo especial cuando el partido está bloqueado */
+        .btn-locked {
+            background-color: #2a2a2a;
+            color: #888;
+        }
+        .btn-locked:hover { background-color: #333; }
+
+        /* Icono de candado palpitante */
+        .lock-icon {
+            display: inline-block;
+            animation: pulseLock 1.5s infinite alternate;
+        }
+        @keyframes pulseLock {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); color: var(--error-color); }
+        }
+
+        /* --- LEADERBOARD --- */
+        .tablas-section {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            height: fit-content;
+        }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { color: var(--accent-color); }
+        .posicion { font-weight: bold; color: #ffcc00; }
+        .btn-logout { background-color: #ff5555; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🏆 Penca Caffa</h1>
+        <p>Iniciá sesión con tu nombre y jugá tus resultados</p>
+    </header>
+
+    <div class="auth-card" id="panel-identidad">
+        <label style="font-weight: bold; font-size: 1.1rem;">Verificación de Jugador</label>
+        <div class="auth-form" id="form-login-inputs">
+            <input type="text" id="input-usuario" class="auth-input" placeholder="Tu nombre (Ej: Sofía o Mateo)">
+            <button class="btn-accion" onclick="verificarUsuario()">Ingresar al Sistema</button>
+        </div>
+        <div id="status-usuario">⚠️ Debes verificar tu nombre para poder habilitar los pronósticos.</div>
+    </div>
+
+    <div class="container">
+        <main>
+            <h2>Partidos Disponibles</h2>
+            <div id="contenedor-partidos">
+                </div>
+        </main>
+
+        <aside class="tablas-section">
+            <h2>Top 10 Usuarios</h2>
+            <table>
+                <thead><tr><th>Pos</th><th>Usuario</th><th>Puntos</th></tr></thead>
+                <tbody id="tabla-top10"></tbody>
+            </table>
+
+            <h2>Todos los Usuarios</h2>
+            <table>
+                <thead><tr><th>Usuario</th><th>Puntos</th></tr></thead>
+                <tbody id="tabla-todos"></tbody>
+            </table>
+        </aside>
+    </div>
+
+    <script src="fnted.js"></script>
+</body>
+</html>
